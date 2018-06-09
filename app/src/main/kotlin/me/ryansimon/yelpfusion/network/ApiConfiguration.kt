@@ -8,9 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 /**
  * @author Ryan Simon
  */
-class ApiConfiguration(apiKey: String, val apiUrl: String) {
+class ApiConfiguration(apiKey: String) {
 
     private val apiKeyInterceptor = ApiKeyInterceptor(apiKey)
+    private val apiUrl = "https://api.yelp.com/"
 
     val retrofit = getRetrofit(apiUrl, apiKeyInterceptor)
 

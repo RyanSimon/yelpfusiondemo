@@ -8,18 +8,19 @@ import okhttp3.Response
  */
 class ApiKeyInterceptor(private val apiKeyValue: String) : Interceptor {
 
-    private val bearerHeaderKey = "Bearer"
+    private val bearerHeaderValuePrefix = "Bearer "
+    private val authHeaderKey = "Authorization"
 
     override fun intercept(chain: Interceptor.Chain?): Response {
         chain?.let {
             val original = chain.request()
 
-            if (original.header(bearerHeaderKey) != null) {
+            if (original.header(authHeaderKey) != null) {
                 return chain.proceed(original)
             }
 
             val newRequest = original.newBuilder()
-                    .addHeader(bearerHeaderKey, apiKeyValue)
+                    .addHeader(authHeaderKey, bearerHeaderValuePrefix + apiKeyValue)
                     .build()
 
             return chain.proceed(newRequest)
