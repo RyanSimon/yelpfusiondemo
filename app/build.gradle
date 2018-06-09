@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion compileSdk
@@ -38,17 +39,21 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
     implementation "com.android.support:cardview-v7:$supportVersion"
 
-    // General depedencies
+    // General dependencies
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:$rxJavaAdapterVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+    implementation "android.arch.lifecycle:reactivestreams:$lifecycleVersion"
+    kapt "android.arch.lifecycle:compiler:$lifecycleVersion"
 
     // Test dependencies
     testImplementation "junit:junit:$junitVersion"
     testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$kotlinMockitoVersion"
     testImplementation "org.amshove.kluent:kluent-android:$kluentVersion"
+    testImplementation "android.arch.core:core-testing:$lifecycleVersion"
     androidTestImplementation "com.android.support.test:runner:$androidTestRunnerVersion"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
