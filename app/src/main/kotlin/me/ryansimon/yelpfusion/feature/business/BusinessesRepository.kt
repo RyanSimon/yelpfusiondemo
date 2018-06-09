@@ -21,10 +21,14 @@ class BusinessesRepository(private val businessesApi: BusinessesApi,
     }
 
     private fun <T> request(call: Call<T>): Either<Failure, T> {
-        val response = call.execute()
-        return when (response.isSuccessful) {
-            true -> Success(response.body())
-            false -> Error(ServerError())
+        return try {
+            val response = call.execute()
+            when (response.isSuccessful) {
+                true -> Success(response.body())
+                false -> Error(ServerError())
+            }
+        } catch (exception: Throwable) {
+            Error(ServerError())
         }
     }
 }

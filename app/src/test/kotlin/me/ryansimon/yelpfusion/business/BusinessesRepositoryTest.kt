@@ -8,7 +8,6 @@ import me.ryansimon.yelpfusion.feature.business.BusinessesApi
 import me.ryansimon.yelpfusion.feature.business.BusinessesRepository
 import me.ryansimon.yelpfusion.feature.business.BusinessesResponse
 import me.ryansimon.yelpfusion.network.Either
-import me.ryansimon.yelpfusion.network.Failure
 import me.ryansimon.yelpfusion.network.Failure.*
 import me.ryansimon.yelpfusion.network.InternetConnectionHandler
 import org.amshove.kluent.shouldBeInstanceOf
@@ -18,6 +17,7 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Call
 import retrofit2.Response
+import java.io.IOException
 
 /**
  * Test class for [BusinessesRepository]
@@ -80,6 +80,24 @@ class BusinessesRepositoryTest {
         given { mockInternetConnectionHandler.isConnected }.willReturn(true)
         given { mockBusinessesResponse.isSuccessful }.willReturn(false)
         given { mockBusinessesCall.execute() }.willReturn(mockBusinessesResponse)
+        given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION) }.willReturn(mockBusinessesCall)
+
+        // when
+        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
+
+        // then
+        verify(mockBusinessesApi).search(VALID_SEARCH_TERM, VALID_LOCATION)
+        response shouldBeInstanceOf Either::class
+        response.isError shouldEqualTo true
+        response.either({ failure -> failure shouldBeInstanceOf ServerError::class }, {})
+    }
+
+    @Test
+    fun `Businesses search should handle exceptions`() {
+        // given
+        given { mockInternetConnectionHandler.isConnected }.willReturn(true)
+        given { mockBusinessesResponse.isSuccessful }.willReturn(false)
+        given { mockBusinessesCall.execute() }.willThrow(IOException())
         given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION) }.willReturn(mockBusinessesCall)
 
         // when
