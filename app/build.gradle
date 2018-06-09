@@ -42,7 +42,6 @@ dependencies {
     // General dependencies
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    implementation "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:$rxJavaAdapterVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
     implementation "android.arch.lifecycle:extensions:$lifecycleVersion"

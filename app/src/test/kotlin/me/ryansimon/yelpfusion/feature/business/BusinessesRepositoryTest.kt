@@ -1,12 +1,9 @@
-package me.ryansimon.yelpfusion.business
+package me.ryansimon.yelpfusion.feature.business
 
 import com.nhaarman.mockito_kotlin.given
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyZeroInteractions
-import me.ryansimon.yelpfusion.feature.business.BusinessesApi
-import me.ryansimon.yelpfusion.feature.business.BusinessesRepository
-import me.ryansimon.yelpfusion.feature.business.BusinessesResponse
 import me.ryansimon.yelpfusion.network.Either
 import me.ryansimon.yelpfusion.network.Failure.*
 import me.ryansimon.yelpfusion.network.InternetConnectionHandler
@@ -44,7 +41,7 @@ class BusinessesRepositoryTest {
     @Test
     fun `Should get businesses response when search term and location provided`() {
         // given
-        val businessesResponse = BusinessesResponse()
+        val businessesResponse = BUSINESS_RESPONSE
         given { mockInternetConnectionHandler.isConnected }.willReturn(true)
         given { mockBusinessesResponse.isSuccessful }.willReturn(true)
         given { mockBusinessesResponse.body() }.willReturn(businessesResponse)
