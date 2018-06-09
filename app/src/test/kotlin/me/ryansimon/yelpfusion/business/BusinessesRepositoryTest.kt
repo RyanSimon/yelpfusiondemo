@@ -44,30 +44,27 @@ class BusinessesRepositoryTest {
     @Test
     fun `Should get businesses response when search term and location provided`() {
         // given
-        val searchTerm = "Italian"
-        val location = "Irvine, CA"
         val businessesResponse = BusinessesResponse()
+        given { mockInternetConnectionHandler.isConnected }.willReturn(true)
         given { mockBusinessesResponse.body() }.willReturn(businessesResponse)
         given { mockBusinessesCall.execute() }.willReturn(mockBusinessesResponse)
-        given { mockBusinessesApi.search(searchTerm, location) }.willReturn(mockBusinessesCall)
+        given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION) }.willReturn(mockBusinessesCall)
 
         // when
-        val response = businessesRepository.search(searchTerm, location)
+        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
 
         // then
-        verify(mockBusinessesApi).search(searchTerm, location)
+        verify(mockBusinessesApi).search(VALID_SEARCH_TERM, VALID_LOCATION)
         response shouldEqual Either.Success(businessesResponse)
     }
 
     @Test
     fun `Businesses search should return no network connection error when Internet is not available`() {
         // given
-        val searchTerm = "Cake"
-        val location = "Irvine, CA"
         given { mockInternetConnectionHandler.isConnected }.willReturn(false)
 
         // when
-        val response = businessesRepository.search(searchTerm, location)
+        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
 
         // then
         response shouldBeInstanceOf Either::class
