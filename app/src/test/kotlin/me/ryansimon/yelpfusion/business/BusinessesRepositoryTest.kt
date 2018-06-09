@@ -3,11 +3,18 @@ package me.ryansimon.yelpfusion.business
 import com.nhaarman.mockito_kotlin.given
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import me.ryansimon.yelpfusion.feature.business.BusinessesApi
 import me.ryansimon.yelpfusion.feature.business.BusinessesRepository
 import me.ryansimon.yelpfusion.feature.business.BusinessesResponse
 import me.ryansimon.yelpfusion.network.Either
+import me.ryansimon.yelpfusion.network.Failure
+import me.ryansimon.yelpfusion.network.Failure.*
+import me.ryansimon.yelpfusion.network.InternetConnectionHandler
+import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldEqualTo
+import org.junit.Before
 import org.junit.Test
 import retrofit2.Call
 import retrofit2.Response
@@ -19,16 +26,27 @@ import retrofit2.Response
  */
 class BusinessesRepositoryTest {
 
+    private lateinit var mockBusinessesApi: BusinessesApi
+    private lateinit var mockBusinessesResponse: Response<BusinessesResponse>
+    private lateinit var mockBusinessesCall: Call<BusinessesResponse>
+    private lateinit var mockInternetConnectionHandler: InternetConnectionHandler
+    private lateinit var businessesRepository: BusinessesRepository
+
+    @Before
+    fun setup() {
+        mockBusinessesApi = mock()
+        mockBusinessesResponse = mock()
+        mockBusinessesCall = mock()
+        mockInternetConnectionHandler = mock()
+        businessesRepository = BusinessesRepository(mockBusinessesApi, mockInternetConnectionHandler)
+    }
+
     @Test
     fun `Should get businesses response when search term and location provided`() {
         // given
         val searchTerm = "Italian"
         val location = "Irvine, CA"
         val businessesResponse = BusinessesResponse()
-        val mockBusinessesApi: BusinessesApi = mock()
-        val mockBusinessesResponse: Response<BusinessesResponse> = mock()
-        val mockBusinessesCall: Call<BusinessesResponse> = mock()
-        val businessesRepository = BusinessesRepository(mockBusinessesApi)
         given { mockBusinessesResponse.body() }.willReturn(businessesResponse)
         given { mockBusinessesCall.execute() }.willReturn(mockBusinessesResponse)
         given { mockBusinessesApi.search(searchTerm, location) }.willReturn(mockBusinessesCall)
@@ -39,5 +57,22 @@ class BusinessesRepositoryTest {
         // then
         verify(mockBusinessesApi).search(searchTerm, location)
         response shouldEqual Either.Success(businessesResponse)
+    }
+
+    @Test
+    fun `Businesses search should return no network connection error when Internet is not available`() {
+        // given
+        val searchTerm = "Cake"
+        val location = "Irvine, CA"
+        given { mockInternetConnectionHandler.isConnected }.willReturn(false)
+
+        // when
+        val response = businessesRepository.search(searchTerm, location)
+
+        // then
+        response shouldBeInstanceOf Either::class
+        response.isError shouldEqualTo true
+        response.either({ failure -> failure shouldBeInstanceOf NoNetworkConnection::class }, {})
+        verifyZeroInteractions(mockBusinessesApi)
     }
 }
