@@ -46,6 +46,7 @@ class BusinessesRepositoryTest {
         // given
         val businessesResponse = BusinessesResponse()
         given { mockInternetConnectionHandler.isConnected }.willReturn(true)
+        given { mockBusinessesResponse.isSuccessful }.willReturn(true)
         given { mockBusinessesResponse.body() }.willReturn(businessesResponse)
         given { mockBusinessesCall.execute() }.willReturn(mockBusinessesResponse)
         given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION) }.willReturn(mockBusinessesCall)
@@ -71,5 +72,23 @@ class BusinessesRepositoryTest {
         response.isError shouldEqualTo true
         response.either({ failure -> failure shouldBeInstanceOf NoNetworkConnection::class }, {})
         verifyZeroInteractions(mockBusinessesApi)
+    }
+
+    @Test
+    fun `Businesses search should return server error when API request is unsuccessful`() {
+        // given
+        given { mockInternetConnectionHandler.isConnected }.willReturn(true)
+        given { mockBusinessesResponse.isSuccessful }.willReturn(false)
+        given { mockBusinessesCall.execute() }.willReturn(mockBusinessesResponse)
+        given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION) }.willReturn(mockBusinessesCall)
+
+        // when
+        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
+
+        // then
+        verify(mockBusinessesApi).search(VALID_SEARCH_TERM, VALID_LOCATION)
+        response shouldBeInstanceOf Either::class
+        response.isError shouldEqualTo true
+        response.either({ failure -> failure shouldBeInstanceOf ServerError::class }, {})
     }
 }
