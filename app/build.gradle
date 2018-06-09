@@ -33,8 +33,19 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
     implementation "com.android.support:cardview-v7:$supportVersion"
 
+    // General depedencies
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:$rxJavaAdapterVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+
     // Test dependencies
     testImplementation "junit:junit:$junitVersion"
+    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:$kotlinMockitoVersion"
+    testImplementation "org.amshove.kluent:kluent-android:$kluentVersion"
     androidTestImplementation "com.android.support.test:runner:$androidTestRunnerVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$espressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }
