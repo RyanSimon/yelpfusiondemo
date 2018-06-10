@@ -24,13 +24,15 @@ class MainActivity : AppCompatActivity() {
             apiConfiguration.retrofit.create(BusinessesApi::class.java),
             InternetConnectionHandler(this)
     )
+    private val numResults = 50
+    private var numResultsToSkip = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setupBusinessList()
-        performSearch("pizza", "Irvine, CA", business_list_view)
+        performSearch("pizza", "San Francisco, CA", businessListView = business_list_view)
     }
 
     private fun setupBusinessList() {
@@ -39,7 +41,8 @@ class MainActivity : AppCompatActivity() {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                performSearch("pizza", "Irvine, CA", businessListView)
+                numResultsToSkip += numResults
+                performSearch("pizza", "San Francisco, CA", numResultsToSkip, businessListView)
             }
         }
         businessListView.setHasFixedSize(true)
@@ -49,14 +52,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun performSearch(searchTerm: String,
                               location: String,
+                              numResultsToSkip: Int = this.numResultsToSkip,
                               businessListView: RecyclerView): Disposable {
-        val callable = { businessesRepository.search(searchTerm, location) }
+        val callable = { businessesRepository.search(searchTerm, location, numResults, numResultsToSkip) }
         return Single.fromCallable(callable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess({
                     success -> success.either(
-                        {},
+                        { Log.d("Error", "uh oh") },
                         { businessesResponse -> (businessListView.adapter as BusinessesAdapter).addBusinesses(businessesResponse.businesses) }
                 )
                 })
