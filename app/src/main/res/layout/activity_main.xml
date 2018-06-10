@@ -10,6 +10,8 @@
     <android.support.v7.widget.RecyclerView android:id="@+id/business_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:paddingBottom="16dp"
         android:clipToPadding="false"
         app:layoutManager="android.support.v7.widget.GridLayoutManager"
