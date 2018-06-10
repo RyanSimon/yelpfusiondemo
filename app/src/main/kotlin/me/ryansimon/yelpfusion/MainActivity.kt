@@ -6,6 +6,9 @@ import android.util.Log
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_main.*
+import me.ryansimon.yelpfusion.feature.business.Business
+import me.ryansimon.yelpfusion.feature.business.BusinessesAdapter
 import me.ryansimon.yelpfusion.feature.business.BusinessesApi
 import me.ryansimon.yelpfusion.feature.business.BusinessesRepository
 import me.ryansimon.yelpfusion.network.ApiConfiguration
@@ -26,8 +29,19 @@ class MainActivity : AppCompatActivity() {
         val response = Single.fromCallable(callable)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSuccess({ success -> success.either({}, { businessesResponse -> Log.d("Success", "Yay") })})
+                        .doOnSuccess({
+                            success -> success.either(
+                                {},
+                                { businessesResponse -> setupBusinessList(businessesResponse.businesses) }
+                            )
+                        })
                         .doOnError({ error -> Log.d("Error", error.message)})
                         .subscribe()
+    }
+
+    private fun setupBusinessList(businesses: MutableList<Business>) {
+        val businessListView = business_list_view
+        businessListView.setHasFixedSize(true)
+        businessListView.adapter = BusinessesAdapter(businesses)
     }
 }
