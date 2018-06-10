@@ -1,5 +1,6 @@
 package me.ryansimon.yelpfusion.feature.business
 
+import me.ryansimon.yelpfusion.feature.business.BusinessFailure.*
 import me.ryansimon.yelpfusion.network.Either
 import me.ryansimon.yelpfusion.network.Either.Error
 import me.ryansimon.yelpfusion.network.Either.Success
@@ -13,11 +14,25 @@ import retrofit2.Call
  */
 class BusinessesRepository(private val businessesApi: BusinessesApi,
                            private val internetConnectionHandler: InternetConnectionHandler) {
-    fun search(searchTerm: String, location: String): Either<Failure, BusinessesResponse> {
+    fun search(searchTerm: String,
+               location: String,
+               numResults: Int = 20,
+               numResultsToSkip: Int = 0): Either<Failure, BusinessesResponse> {
         return when (internetConnectionHandler.isConnected) {
-            true -> request(businessesApi.search(searchTerm, location))
+            true -> {
+                try {
+                    validateSearchParameters(numResults, numResultsToSkip)
+                    request(businessesApi.search(searchTerm, location, numResults, numResultsToSkip))
+                } catch (error: IllegalArgumentException) {
+                    Error(SearchParametersAreInvalid())
+                }
+            }
             false -> Error(NoNetworkConnection())
         }
+    }
+
+    private fun validateSearchParameters(numResults: Int, numResultsToSkip: Int) {
+        require(numResults in 1..50 && numResults + numResultsToSkip <= 1000 )
     }
 
     private fun <T> request(call: Call<T>): Either<Failure, T> {
