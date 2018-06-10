@@ -15,7 +15,7 @@ import me.ryansimon.yelpfusion.R
 /**
  * @author Ryan Simon
  */
-class BusinessesAdapter(val businesses: MutableList<Business>)
+class BusinessesAdapter(private val businesses: MutableList<Business> = mutableListOf())
     : RecyclerView.Adapter<BusinessesAdapter.BusinessViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessViewHolder {
@@ -41,6 +41,12 @@ class BusinessesAdapter(val businesses: MutableList<Business>)
     }
 
     override fun getItemCount(): Int = businesses.size
+
+    fun addBusinesses(newBusinesses: List<Business>) {
+        val previousSize = itemCount
+        businesses.addAll(newBusinesses)
+        notifyItemRangeInserted(previousSize, newBusinesses.size)
+    }
 
     class BusinessViewHolder(itemView: View,
                              val businessNameTextView: TextView = itemView.business_name_tv,
