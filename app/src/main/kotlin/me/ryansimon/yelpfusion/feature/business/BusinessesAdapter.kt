@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_yelp_business.view.*
 import me.ryansimon.yelpfusion.R
 
@@ -26,9 +27,15 @@ class BusinessesAdapter(val businesses: MutableList<Business>)
 
     override fun onBindViewHolder(holder: BusinessViewHolder, position: Int) {
         val business = businesses[position]
+        val context = holder.businessImageView.context
+
         holder.businessNameTextView.text = business.name
-        Glide.with(holder.businessImageView.context)
+
+        holder.businessImageView.contentDescription =
+                context.getString(R.string.business_img_accessibility_msg, business.name)
+        Glide.with(context)
                 .load(business.imageUrl)
+                .apply(RequestOptions.centerCropTransform())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(holder.businessImageView)
     }
