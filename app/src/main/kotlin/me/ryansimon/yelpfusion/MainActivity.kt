@@ -12,6 +12,7 @@ import me.ryansimon.yelpfusion.feature.business.*
 import me.ryansimon.yelpfusion.network.ApiConfiguration
 import me.ryansimon.yelpfusion.network.InternetConnectionHandler
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
 import io.reactivex.disposables.Disposable
 import me.ryansimon.yelpfusion.feature.business.EndlessRecyclerViewScrollListener
 
@@ -33,6 +34,12 @@ class MainActivity : AppCompatActivity() {
 
         setupBusinessList()
         performSearch("pizza", "San Francisco, CA", businessListView = business_list_view)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main_activity, menu)
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun setupBusinessList() {

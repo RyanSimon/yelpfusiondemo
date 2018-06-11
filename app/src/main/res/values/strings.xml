@@ -3,4 +3,5 @@
 
     <!-- Business Feature -->
     <string name="business_img_accessibility_msg">Image for %s</string>
+    <string name="search">Search&#8320;</string>
 </resources>
