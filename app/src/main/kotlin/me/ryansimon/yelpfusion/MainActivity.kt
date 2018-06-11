@@ -15,7 +15,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import io.reactivex.disposables.Disposable
 import me.ryansimon.yelpfusion.feature.business.EndlessRecyclerViewScrollListener
-
+import android.support.v7.widget.SearchView
+import android.view.MenuItem
+import me.ryansimon.yelpfusion.extension.hideKeyboard
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,19 +29,40 @@ class MainActivity : AppCompatActivity() {
     )
     private val numResults = 50
     private var numResultsToSkip = 0
+    private val searchLocation = "San Francisco, CA"
+    private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setupBusinessList()
-        performSearch("pizza", "San Francisco, CA", businessListView = business_list_view)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main_activity, menu)
+        val menuItem = menu.findItem(R.id.action_search)
+        setupSearchView(menuItem)
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun setupSearchView(menuItem: MenuItem) {
+        searchView = menuItem.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                val adapter = business_list_view.adapter as BusinessesAdapter
+                adapter.clear()
+                performSearch(query, searchLocation, businessListView = business_list_view)
+                hideKeyboard()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
+            }
+        })
+        searchView.setQuery("pizza", true)
     }
 
     private fun setupBusinessList() {
@@ -49,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
                 numResultsToSkip += numResults
-                performSearch("pizza", "San Francisco, CA", numResultsToSkip, businessListView)
+                performSearch(searchView?.query.toString(), searchLocation, numResultsToSkip, businessListView)
             }
         }
         businessListView.setHasFixedSize(true)

@@ -48,6 +48,11 @@ class BusinessesAdapter(private val businesses: MutableList<Business> = mutableL
         notifyItemRangeInserted(previousSize, newBusinesses.size)
     }
 
+    fun clear() {
+        businesses.clear()
+        notifyDataSetChanged()
+    }
+
     class BusinessViewHolder(itemView: View,
                              val businessNameTextView: TextView = itemView.business_name_tv,
                              val businessImageView: ImageView = itemView.business_img)
