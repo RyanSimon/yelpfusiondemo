@@ -1,6 +1,5 @@
 package me.ryansimon.yelpfusion.feature.business
 
-import android.R
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
@@ -21,7 +20,6 @@ class BusinessesViewModel(application: Application,
     private val numResults = 20
     private var numResultsToSkip = 0
     private val location = "San Francisco, CA"
-    private var currentSearchQuery: String? = null
     private var currentSearchDisposable: Disposable? = null
 
     /**

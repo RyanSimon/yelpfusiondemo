@@ -48,17 +48,7 @@ class BusinessesActivity : AppCompatActivity() {
         searchView.setIconifiedByDefault(false)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                val adapter = business_list_view.adapter as BusinessesAdapter
-                adapter.clear()
-
-                if(!suggestions.contains(query)) {
-                    suggestions.add(query)
-                }
-
-                businessesViewModel.userSubmittedPaginatedSearch(query)
-
-                hideKeyboard()
-
+                searchSubmitted(query)
                 return true
             }
 
@@ -69,20 +59,12 @@ class BusinessesActivity : AppCompatActivity() {
         })
         searchView.setOnSuggestionListener(object : SearchView.OnSuggestionListener {
             override fun onSuggestionClick(position: Int): Boolean {
-                val suggestion = searchView.suggestionsAdapter.getItem(position) as? String
-                suggestion?.let {
-                    businessesViewModel.userSubmittedPaginatedSearch(it)
-                }
-
+                suggestionSelected()
                 return true
             }
 
             override fun onSuggestionSelect(position: Int): Boolean {
-                val suggestion = searchView.suggestionsAdapter.getItem(position) as? String
-                suggestion?.let {
-                    businessesViewModel.userSubmittedPaginatedSearch(it)
-                }
-
+                suggestionSelected()
                 return true
             }
         })
@@ -107,6 +89,19 @@ class BusinessesActivity : AppCompatActivity() {
         searchView.suggestionsAdapter.changeCursor(matrixCursor)
     }
 
+    private fun searchSubmitted(query: String) {
+        val adapter = business_list_view.adapter as BusinessesAdapter
+        adapter.clear()
+
+        if(!suggestions.contains(query)) {
+            suggestions.add(query)
+        }
+
+        businessesViewModel.userSubmittedPaginatedSearch(query)
+
+        hideKeyboard()
+    }
+
     private fun setupBusinessList() {
         val businessListView = business_list_view
         val scrollListener = object : EndlessRecyclerViewScrollListener(businessListView.layoutManager as GridLayoutManager) {
@@ -117,5 +112,9 @@ class BusinessesActivity : AppCompatActivity() {
         businessListView.setHasFixedSize(true)
         businessListView.addOnScrollListener(scrollListener)
         businessListView.adapter = BusinessesAdapter()
+    }
+
+    private fun suggestionSelected() {
+        searchView.setQuery(searchView.suggestionsAdapter.cursor.getString(1), true)
     }
 }
