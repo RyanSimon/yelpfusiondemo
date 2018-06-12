@@ -22,3 +22,4 @@ Due to time constraints, a few things were left out of this demo.
 * Units tests for the ViewModel
 * Empty state
 * Support for user's location
+* Suggestions are only stored for the life of the application

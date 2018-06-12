@@ -53,7 +53,7 @@ class BusinessesActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                populateAdapter(newText)
+                populateSuggestionsAdapter(newText)
                 return false
             }
         })
@@ -80,7 +80,7 @@ class BusinessesActivity : AppCompatActivity() {
         )
     }
 
-    private fun populateAdapter(query: String) {
+    private fun populateSuggestionsAdapter(query: String) {
         val matrixCursor = MatrixCursor(arrayOf(BaseColumns._ID, suggestionsId))
         (0 until suggestions.size)
                 .filter { suggestions[it].toLowerCase().startsWith(query.toLowerCase()) }
