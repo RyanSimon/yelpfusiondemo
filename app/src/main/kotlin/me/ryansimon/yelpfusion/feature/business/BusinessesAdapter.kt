@@ -42,10 +42,11 @@ class BusinessesAdapter(private val businesses: MutableList<Business> = mutableL
 
     override fun getItemCount(): Int = businesses.size
 
-    fun addBusinesses(newBusinesses: List<Business>) {
-        val previousSize = itemCount
-        businesses.addAll(newBusinesses)
-        notifyItemRangeInserted(previousSize, newBusinesses.size)
+    fun updateBusinesses(newBusinesses: List<Business>) {
+        val currentSize = businesses.size
+        val itemsToAdd = newBusinesses.subList(currentSize, newBusinesses.size)
+        businesses.addAll(itemsToAdd)
+        notifyItemRangeInserted(currentSize, itemsToAdd.size)
     }
 
     fun clear() {

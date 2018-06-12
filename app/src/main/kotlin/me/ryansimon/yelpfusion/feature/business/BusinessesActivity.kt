@@ -1,48 +1,43 @@
-package me.ryansimon.yelpfusion
+package me.ryansimon.yelpfusion.feature.business
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.widget.CursorAdapter
 import android.support.v4.widget.SimpleCursorAdapter
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
-import me.ryansimon.yelpfusion.feature.business.*
-import me.ryansimon.yelpfusion.network.ApiConfiguration
-import me.ryansimon.yelpfusion.network.InternetConnectionHandler
 import android.support.v7.widget.RecyclerView
-import io.reactivex.disposables.Disposable
-import me.ryansimon.yelpfusion.feature.business.EndlessRecyclerViewScrollListener
 import android.support.v7.widget.SearchView
 import me.ryansimon.yelpfusion.extension.hideKeyboard
 import android.provider.BaseColumns
 import android.database.MatrixCursor
+import me.ryansimon.yelpfusion.R
 
 
 /**
  * @author Ryan Simon
  */
-class MainActivity : AppCompatActivity() {
+class BusinessesActivity : AppCompatActivity() {
 
     private val suggestions = mutableListOf<String>()
     private val suggestionsId = "suggestions"
-    private val apiConfiguration = ApiConfiguration(BuildConfig.YELP_API_KEY)
-    private val businessesRepository = BusinessesRepository(
-            apiConfiguration.retrofit.create(BusinessesApi::class.java),
-            InternetConnectionHandler(this)
-    )
-    private val numResults = 50
-    private var numResultsToSkip = 0
-    private val searchLocation = "San Francisco, CA"
     private lateinit var searchView: SearchView
+    private lateinit var businessesViewModel: BusinessesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        businessesViewModel = ViewModelProviders.of(this, BusinessesViewModelFactory(application))
+                .get(BusinessesViewModel::class.java)
+        businessesViewModel.businessesObservable.observe(this, Observer<List<Business>> {
+            it?.let {
+                (business_list_view.adapter as BusinessesAdapter).updateBusinesses(it)
+            }
+        })
 
         setupBusinessList()
         setupSearchView()
@@ -60,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                     suggestions.add(query)
                 }
 
-                performSearch(query, searchLocation, businessListView = business_list_view)
+                businessesViewModel.userSubmittedPaginatedSearch(query)
 
                 hideKeyboard()
 
@@ -76,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             override fun onSuggestionClick(position: Int): Boolean {
                 val suggestion = searchView.suggestionsAdapter.getItem(position) as? String
                 suggestion?.let {
-                    performSearch(it, searchLocation, businessListView = business_list_view)
+                    businessesViewModel.userSubmittedPaginatedSearch(it)
                 }
 
                 return true
@@ -85,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             override fun onSuggestionSelect(position: Int): Boolean {
                 val suggestion = searchView.suggestionsAdapter.getItem(position) as? String
                 suggestion?.let {
-                    performSearch(it, searchLocation, businessListView = business_list_view)
+                    businessesViewModel.userSubmittedPaginatedSearch(it)
                 }
 
                 return true
@@ -101,7 +96,6 @@ class MainActivity : AppCompatActivity() {
                 to,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         )
-        searchView.setQuery("pizza", true)
     }
 
     private fun populateAdapter(query: String) {
@@ -117,32 +111,11 @@ class MainActivity : AppCompatActivity() {
         val businessListView = business_list_view
         val scrollListener = object : EndlessRecyclerViewScrollListener(businessListView.layoutManager as GridLayoutManager) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
-                numResultsToSkip += numResults
-                performSearch(searchView.query.toString(), searchLocation, numResultsToSkip, businessListView)
+                businessesViewModel.userSubmittedPaginatedSearch(searchView.query.toString(), false)
             }
         }
         businessListView.setHasFixedSize(true)
         businessListView.addOnScrollListener(scrollListener)
         businessListView.adapter = BusinessesAdapter()
-    }
-
-    private fun performSearch(searchTerm: String,
-                              location: String,
-                              numResultsToSkip: Int = this.numResultsToSkip,
-                              businessListView: RecyclerView): Disposable {
-        val callable = { businessesRepository.search(searchTerm, location, numResults, numResultsToSkip) }
-        return Single.fromCallable(callable)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess({
-                    success -> success.either(
-                        { Log.d("Error", "uh oh") },
-                        { businessesResponse -> (businessListView.adapter as BusinessesAdapter).addBusinesses(businessesResponse.businesses) }
-                )
-                })
-                .doOnError({ error -> Log.d("Error", error.message)})
-                .subscribe()
     }
 }
