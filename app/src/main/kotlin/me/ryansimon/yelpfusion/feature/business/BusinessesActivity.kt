@@ -100,6 +100,7 @@ class BusinessesActivity : AppCompatActivity() {
         businessesViewModel.userSubmittedPaginatedSearch(query)
 
         hideKeyboard()
+        hideSearchEditCursor()
     }
 
     private fun setupBusinessList() {
@@ -116,5 +117,9 @@ class BusinessesActivity : AppCompatActivity() {
 
     private fun suggestionSelected() {
         searchView.setQuery(searchView.suggestionsAdapter.cursor.getString(1), true)
+    }
+
+    private fun hideSearchEditCursor() {
+        business_list_view.requestFocus()
     }
 }

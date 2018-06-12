@@ -31,6 +31,7 @@
         android:paddingEnd="8dp"
         android:paddingBottom="16dp"
         android:clipToPadding="false"
+        android:focusableInTouchMode="true"
         app:layoutManager="android.support.v7.widget.GridLayoutManager"
         app:spanCount="2" />
 
