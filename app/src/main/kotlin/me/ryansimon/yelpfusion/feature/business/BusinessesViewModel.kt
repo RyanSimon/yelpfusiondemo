@@ -1,9 +1,9 @@
 package me.ryansimon.yelpfusion.feature.business
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import android.util.Log
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,8 +14,7 @@ import io.reactivex.schedulers.Schedulers
  * @author Ryan Simon
  */
 class BusinessesViewModel(application: Application,
-                          private val businessesRepository: BusinessesRepository)
-    : AndroidViewModel(application) {
+                          private val businessesRepository: BusinessesRepository) : AndroidViewModel(application) {
 
     private val numResults = 20
     private var numResultsToSkip = 0
@@ -49,8 +48,7 @@ class BusinessesViewModel(application: Application,
         currentSearchDisposable = Single.fromCallable(callable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess({
-                    success -> success.either(
+                .doOnSuccess { success -> success.either(
                         { Log.d("Error", "uh oh") },
                         { businessesResponse ->
                             val newList = mutableListOf<Business>()
@@ -62,8 +60,12 @@ class BusinessesViewModel(application: Application,
                             _businessesObservable.setValue(newList)
                         }
                 )
-                })
-                .doOnError({ error -> Log.d("Error", error.message)})
+                }
+                .doOnError { error ->
+                    error.message?.let {
+                        Log.d("Error", it)
+                    }
+                }
                 .subscribe()
     }
 
