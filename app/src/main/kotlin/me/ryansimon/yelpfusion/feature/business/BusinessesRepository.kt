@@ -2,8 +2,8 @@ package me.ryansimon.yelpfusion.feature.business
 
 import me.ryansimon.yelpfusion.feature.business.BusinessFailure.*
 import me.ryansimon.yelpfusion.network.Either
-import me.ryansimon.yelpfusion.network.Either.Error
 import me.ryansimon.yelpfusion.network.Either.Success
+import me.ryansimon.yelpfusion.network.Either.Error
 import me.ryansimon.yelpfusion.network.Failure
 import me.ryansimon.yelpfusion.network.Failure.*
 import me.ryansimon.yelpfusion.network.InternetConnectionHandler
@@ -38,8 +38,8 @@ class BusinessesRepository(private val businessesApi: BusinessesApi,
     private fun <T> request(call: Call<T>): Either<Failure, T> {
         return try {
             val response = call.execute()
-            when (response.isSuccessful) {
-                true -> Success(response.body())
+            when (response.isSuccessful && response.body() != null) {
+                true -> Success(response.body()!!)
                 false -> Error(ServerError())
             }
         } catch (exception: Throwable) {

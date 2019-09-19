@@ -1,8 +1,8 @@
 package me.ryansimon.yelpfusion.feature.business
 
 import android.app.Application
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import me.ryansimon.yelpfusion.BuildConfig
 import me.ryansimon.yelpfusion.network.ApiConfiguration
 import me.ryansimon.yelpfusion.network.InternetConnectionHandler

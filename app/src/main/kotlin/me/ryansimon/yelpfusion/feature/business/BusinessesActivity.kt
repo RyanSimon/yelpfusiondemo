@@ -1,15 +1,15 @@
 package me.ryansimon.yelpfusion.feature.business
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
-import android.support.v7.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.widget.CursorAdapter
-import android.support.v4.widget.SimpleCursorAdapter
-import android.support.v7.widget.GridLayoutManager
+import androidx.cursoradapter.widget.CursorAdapter
+import androidx.cursoradapter.widget.SimpleCursorAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.SearchView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.widget.SearchView
 import me.ryansimon.yelpfusion.extension.hideKeyboard
 import android.provider.BaseColumns
 import android.database.MatrixCursor
