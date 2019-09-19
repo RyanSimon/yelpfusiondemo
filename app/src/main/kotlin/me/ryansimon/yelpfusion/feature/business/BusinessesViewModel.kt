@@ -1,14 +1,16 @@
 package me.ryansimon.yelpfusion.feature.business
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import android.util.Log
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.handleCoroutineException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.ryansimon.yelpfusion.network.Failure
 
 /**
  * @author Ryan Simon
@@ -19,7 +21,6 @@ class BusinessesViewModel(application: Application,
     private val numResults = 20
     private var numResultsToSkip = 0
     private val location = "San Francisco, CA"
-    private var currentSearchDisposable: Disposable? = null
 
     /**
      * Observables
@@ -44,33 +45,25 @@ class BusinessesViewModel(application: Application,
                                     location: String,
                                     numResults: Int,
                                     numResultsToSkip: Int) {
-        val callable = { businessesRepository.search(searchTerm, location, numResults, numResultsToSkip) }
-        currentSearchDisposable = Single.fromCallable(callable)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess { success -> success.either(
-                        { Log.d("Error", "uh oh") },
-                        { businessesResponse ->
-                            val newList = mutableListOf<Business>()
-                            val currentBusinesses = _businessesObservable.value
-                            currentBusinesses?.let {
-                                newList.addAll(it)
-                            }
-                            newList.addAll(businessesResponse.businesses)
-                            _businessesObservable.setValue(newList)
-                        }
-                )
-                }
-                .doOnError { error ->
-                    error.message?.let {
-                        Log.d("Error", it)
-                    }
-                }
-                .subscribe()
+        viewModelScope.launch {
+            // Don't actually need withContext here, because Retrofit automatically adds it for all API calls
+            withContext(Dispatchers.IO) {
+                businessesRepository.search(searchTerm, location, numResults, numResultsToSkip)
+            }.either(::processFailure, ::processSuccess)
+        }
     }
 
-    override fun onCleared() {
-        currentSearchDisposable?.dispose()
-        super.onCleared()
+    private fun processSuccess(businessesResponse: BusinessesResponse) {
+        val newList = mutableListOf<Business>()
+        val currentBusinesses = _businessesObservable.value
+        currentBusinesses?.let {
+            newList.addAll(it)
+        }
+        newList.addAll(businessesResponse.businesses)
+        _businessesObservable.value = newList
+    }
+
+    private fun processFailure(failure: Failure) {
+        Log.d("Error", failure::class.java.simpleName)
     }
 }

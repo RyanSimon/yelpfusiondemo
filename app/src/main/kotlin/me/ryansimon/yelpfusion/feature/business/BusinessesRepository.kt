@@ -7,14 +7,14 @@ import me.ryansimon.yelpfusion.network.Either.Error
 import me.ryansimon.yelpfusion.network.Failure
 import me.ryansimon.yelpfusion.network.Failure.*
 import me.ryansimon.yelpfusion.network.InternetConnectionHandler
-import retrofit2.Call
+import retrofit2.Response
 
 /**
  * @author Ryan Simon
  */
 class BusinessesRepository(private val businessesApi: BusinessesApi,
                            private val internetConnectionHandler: InternetConnectionHandler) {
-    fun search(searchTerm: String,
+    suspend fun search(searchTerm: String,
                location: String,
                numResults: Int = 20,
                numResultsToSkip: Int = 0): Either<Failure, BusinessesResponse> {
@@ -35,9 +35,8 @@ class BusinessesRepository(private val businessesApi: BusinessesApi,
         require(numResults in 1..50 && numResults + numResultsToSkip <= 1000 )
     }
 
-    private fun <T> request(call: Call<T>): Either<Failure, T> {
+    private fun <T> request(response: Response<T>): Either<Failure, T> {
         return try {
-            val response = call.execute()
             when (response.isSuccessful && response.body() != null) {
                 true -> Success(response.body()!!)
                 false -> Error(ServerError())

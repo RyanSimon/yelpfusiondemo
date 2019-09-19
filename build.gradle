@@ -42,6 +42,7 @@ ext {
     glideVersion = "4.10.0"
     androidCoreKtxVersion = "1.1.0"
     coroutinesVersion = "1.3.1"
+    viewModelKtxVersion = "2.1.0"
 }
 
 task clean(type: Delete) {
