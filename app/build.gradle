@@ -49,6 +49,8 @@ dependencies {
     implementation "androidx.core:core-ktx:$androidCoreKtxVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewModelKtxVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$liveDataKtxVersion"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleKtxVersion"
 
     // General dependencies
     kapt "com.github.bumptech.glide:compiler:$glideVersion"

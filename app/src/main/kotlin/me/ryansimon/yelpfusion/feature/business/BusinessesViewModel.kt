@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.handleCoroutineException
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.ryansimon.yelpfusion.network.Failure
@@ -51,19 +51,27 @@ class BusinessesViewModel(application: Application,
                 businessesRepository.search(searchTerm, location, numResults, numResultsToSkip)
             }.either(::processFailure, ::processSuccess)
         }
+
     }
 
     private fun processSuccess(businessesResponse: BusinessesResponse) {
-        val newList = mutableListOf<Business>()
-        val currentBusinesses = _businessesObservable.value
-        currentBusinesses?.let {
-            newList.addAll(it)
-        }
-        newList.addAll(businessesResponse.businesses)
-        _businessesObservable.value = newList
+        _businessesObservable.value = mergeBusinessList(businessesResponse)
     }
 
     private fun processFailure(failure: Failure) {
         Log.d("Error", failure::class.java.simpleName)
+    }
+
+    private fun mergeBusinessList(newBusinessesResponse: BusinessesResponse): List<Business> {
+        val mergedList = mutableListOf<Business>()
+        val currentBusinesses = _businessesObservable.value
+
+        currentBusinesses?.let {
+            mergedList.addAll(it)
+        }
+
+        mergedList.addAll(newBusinessesResponse.businesses)
+
+        return mergedList
     }
 }

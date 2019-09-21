@@ -13,7 +13,12 @@ import androidx.appcompat.widget.SearchView
 import me.ryansimon.yelpfusion.extension.hideKeyboard
 import android.provider.BaseColumns
 import android.database.MatrixCursor
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import me.ryansimon.yelpfusion.R
+import me.ryansimon.yelpfusion.extension.queryTextChangeEvents
 
 
 /**
@@ -46,17 +51,18 @@ class BusinessesActivity : AppCompatActivity() {
     private fun setupSearchView() {
         searchView = search_view
         searchView.setIconifiedByDefault(false)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                searchSubmitted(query)
-                return true
-            }
+        searchView.queryTextChangeEvents()
+                .onEach {
+                    val query = searchView.query.toString()
 
-            override fun onQueryTextChange(newText: String): Boolean {
-                populateSuggestionsAdapter(newText)
-                return false
-            }
-        })
+                    if (it.isSubmitted) {
+                        searchSubmitted(query)
+                    } else {
+                        populateSuggestionsAdapter(query)
+                    }
+                }
+                .launchIn(lifecycleScope)
+
         searchView.setOnSuggestionListener(object : SearchView.OnSuggestionListener {
             override fun onSuggestionClick(position: Int): Boolean {
                 suggestionSelected()

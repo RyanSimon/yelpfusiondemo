@@ -9,7 +9,7 @@
     tools:context=".feature.business.BusinessesActivity">
 
     <androidx.appcompat.widget.Toolbar android:id="@+id/toolbar"
-        app:theme="@style/ToolbarTheme"
+        android:theme="@style/ToolbarTheme"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
