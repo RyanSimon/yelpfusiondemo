@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.feature.business
+package me.ryansimon.yelpfusion.feature.business.domain
 
 import com.google.gson.annotations.SerializedName
 

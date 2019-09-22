@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.feature.business
+package me.ryansimon.yelpfusion.feature.business.presentation
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
@@ -11,6 +11,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_yelp_business.view.*
 import me.ryansimon.yelpfusion.R
+import me.ryansimon.yelpfusion.feature.business.domain.Business
 
 /**
  * @author Ryan Simon

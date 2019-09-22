@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.feature.business
+package me.ryansimon.yelpfusion.core
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".feature.business.BusinessesActivity">
+    tools:context=".feature.business.presentation.BusinessesActivity">
 
     <androidx.appcompat.widget.Toolbar android:id="@+id/toolbar"
         android:theme="@style/ToolbarTheme"

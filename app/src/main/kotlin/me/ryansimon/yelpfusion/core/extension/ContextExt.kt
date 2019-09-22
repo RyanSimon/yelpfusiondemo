@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.extension
+package me.ryansimon.yelpfusion.core.extension
 
 import android.content.Context
 import android.net.ConnectivityManager

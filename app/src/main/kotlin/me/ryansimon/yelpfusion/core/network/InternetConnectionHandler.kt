@@ -1,7 +1,7 @@
-package me.ryansimon.yelpfusion.network
+package me.ryansimon.yelpfusion.core.network
 
 import android.content.Context
-import me.ryansimon.yelpfusion.extension.networkInfo
+import me.ryansimon.yelpfusion.core.extension.networkInfo
 
 /**
  * @author Ryan Simon

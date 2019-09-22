@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.feature.business
+package me.ryansimon.yelpfusion.feature.business.presentation
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -10,15 +10,17 @@ import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.widget.SearchView
-import me.ryansimon.yelpfusion.extension.hideKeyboard
+import me.ryansimon.yelpfusion.core.extension.hideKeyboard
 import android.provider.BaseColumns
 import android.database.MatrixCursor
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.flowOf
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import me.ryansimon.yelpfusion.R
-import me.ryansimon.yelpfusion.extension.queryTextChangeEvents
+import me.ryansimon.yelpfusion.core.extension.queryTextChangeEvents
+import me.ryansimon.yelpfusion.core.EndlessRecyclerViewScrollListener
+import me.ryansimon.yelpfusion.feature.business.domain.Business
 
 
 /**

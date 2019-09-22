@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.network
+package me.ryansimon.yelpfusion.core.functional
 
 /**
  * @author Ryan Simon

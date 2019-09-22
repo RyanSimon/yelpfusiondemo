@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.extension
+package me.ryansimon.yelpfusion.core.extension
 
 import android.app.Activity
 import android.content.Context

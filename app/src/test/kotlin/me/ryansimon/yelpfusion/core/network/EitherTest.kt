@@ -1,5 +1,6 @@
-package me.ryansimon.yelpfusion.network
+package me.ryansimon.yelpfusion.core.network
 
+import me.ryansimon.yelpfusion.core.functional.Either
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf

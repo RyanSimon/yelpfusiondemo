@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.network
+package me.ryansimon.yelpfusion.core.network
 
 import okhttp3.Interceptor
 import okhttp3.Response

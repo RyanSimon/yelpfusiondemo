@@ -1,4 +1,4 @@
-package me.ryansimon.yelpfusion.extension
+package me.ryansimon.yelpfusion.core.extension
 
 import androidx.annotation.CheckResult
 import androidx.appcompat.widget.SearchView
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.isActive
 
 /**
- * Methods taken from https://github.com/LDRAlighieri/Corbind/blob/master/corbind-appcompat/src/main/kotlin/ru/ldralighieri/corbind/appcompat/SearchViewQueryTextChangeEvents.kt
+ * @author https://github.com/LDRAlighieri/Corbind/blob/master/corbind-appcompat/src/main/kotlin/ru/ldralighieri/corbind/appcompat/SearchViewQueryTextChangeEvents.kt
  */
 
 /**

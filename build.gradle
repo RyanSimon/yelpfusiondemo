@@ -33,7 +33,7 @@ ext {
     junitVersion = "4.12"
     androidTestRunnerVersion = "1.2.0"
     espressoVersion = "3.1.0"
-    kotlinMockitoVersion = "1.5.0"
+    kotlinMockitoVersion = "2.2.0"
     kluentVersion = "1.38"
     retrofitVersion = "2.6.1"
     rxJavaVersion = "2.2.12"

@@ -1,13 +1,17 @@
 package me.ryansimon.yelpfusion.feature.business
 
-import com.nhaarman.mockito_kotlin.given
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyZeroInteractions
-import me.ryansimon.yelpfusion.feature.business.BusinessFailure.*
-import me.ryansimon.yelpfusion.network.Either
-import me.ryansimon.yelpfusion.network.Failure.*
-import me.ryansimon.yelpfusion.network.InternetConnectionHandler
+import com.nhaarman.mockitokotlin2.given
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyZeroInteractions
+import me.ryansimon.yelpfusion.feature.business.data.BusinessRepositoryImpl
+import me.ryansimon.yelpfusion.feature.business.data.network.BusinessMapper
+import me.ryansimon.yelpfusion.feature.business.data.network.BusinessesApi
+import me.ryansimon.yelpfusion.feature.business.data.network.BusinessesResponse
+import me.ryansimon.yelpfusion.feature.business.domain.BusinessFailure.*
+import me.ryansimon.yelpfusion.core.functional.Either
+import me.ryansimon.yelpfusion.core.network.Failure.*
+import me.ryansimon.yelpfusion.core.network.InternetConnectionHandler
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldEqualTo
@@ -18,43 +22,49 @@ import retrofit2.Response
 import java.io.IOException
 
 /**
- * Test class for [BusinessesRepository]
- *
  * @author Ryan Simon
  */
-class BusinessesRepositoryTest {
+class BusinessRepositoryImplTest {
 
     private lateinit var mockBusinessesApi: BusinessesApi
     private lateinit var mockBusinessesResponse: Response<BusinessesResponse>
     private lateinit var mockBusinessesCall: Call<BusinessesResponse>
     private lateinit var mockInternetConnectionHandler: InternetConnectionHandler
-    private lateinit var businessesRepository: BusinessesRepository
+    private lateinit var mockBusinessMapper: BusinessMapper
+    private lateinit var businessesRepository: BusinessRepositoryImpl
 
     @Before
     fun setup() {
         mockBusinessesApi = mock()
         mockBusinessesResponse = mock()
         mockBusinessesCall = mock()
+        mockBusinessMapper = mock()
         mockInternetConnectionHandler = mock()
-        businessesRepository = BusinessesRepository(mockBusinessesApi, mockInternetConnectionHandler)
+        businessesRepository = BusinessRepositoryImpl(
+                mockBusinessesApi,
+                mockInternetConnectionHandler,
+                mockBusinessMapper
+        )
     }
 
     @Test
     fun `Should get businesses response when search term and location provided`() {
         // given
         val businessesResponse = BUSINESS_RESPONSE
+        val businessList = listOf(BUSINESS)
         given { mockInternetConnectionHandler.isConnected }.willReturn(true)
         given { mockBusinessesResponse.isSuccessful }.willReturn(true)
         given { mockBusinessesResponse.body() }.willReturn(businessesResponse)
         given { mockBusinessesCall.execute() }.willReturn(mockBusinessesResponse)
+        given { mockBusinessMapper.make(BUSINESS_RESPONSE) }.willReturn(businessList)
         given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP) }.willReturn(mockBusinessesCall)
 
         // when
-        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
+        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP)
 
         // then
         verify(mockBusinessesApi).search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP)
-        response shouldEqual Either.Success(businessesResponse)
+        response shouldEqual Either.Success(businessList)
     }
 
     @Test
@@ -64,7 +74,7 @@ class BusinessesRepositoryTest {
         given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP) }.willReturn(mockBusinessesCall)
 
         // when
-        businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
+        businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP)
 
         // then
         verify(mockBusinessesApi).search(VALID_SEARCH_TERM, VALID_LOCATION, 20, 0)
@@ -81,7 +91,7 @@ class BusinessesRepositoryTest {
         // then
         response shouldBeInstanceOf Either::class
         response.isError shouldEqualTo true
-        response.either({ failure -> failure shouldBeInstanceOf SearchParametersAreInvalid::class }, {})
+        response.either({ failure -> failure shouldEqual SearchParametersAreInvalid }, {})
         verifyZeroInteractions(mockBusinessesApi)
     }
 
@@ -91,12 +101,12 @@ class BusinessesRepositoryTest {
         given { mockInternetConnectionHandler.isConnected }.willReturn(false)
 
         // when
-        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
+        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP)
 
         // then
         response shouldBeInstanceOf Either::class
         response.isError shouldEqualTo true
-        response.either({ failure -> failure shouldBeInstanceOf NoNetworkConnection::class }, {})
+        response.either({ failure -> failure shouldEqual NoNetworkConnection }, {})
         verifyZeroInteractions(mockBusinessesApi)
     }
 
@@ -109,13 +119,13 @@ class BusinessesRepositoryTest {
         given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP) }.willReturn(mockBusinessesCall)
 
         // when
-        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
+        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP)
 
         // then
         verify(mockBusinessesApi).search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP)
         response shouldBeInstanceOf Either::class
         response.isError shouldEqualTo true
-        response.either({ failure -> failure shouldBeInstanceOf ServerError::class }, {})
+        response.either({ failure -> failure shouldEqual ServerError }, {})
     }
 
     @Test
@@ -127,12 +137,12 @@ class BusinessesRepositoryTest {
         given { mockBusinessesApi.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP) }.willReturn(mockBusinessesCall)
 
         // when
-        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION)
+        val response = businessesRepository.search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP)
 
         // then
         verify(mockBusinessesApi).search(VALID_SEARCH_TERM, VALID_LOCATION, NUM_RESULTS, NUM_RESULTS_TO_SKIP)
         response shouldBeInstanceOf Either::class
         response.isError shouldEqualTo true
-        response.either({ failure -> failure shouldBeInstanceOf ServerError::class }, {})
+        response.either({ failure -> failure shouldEqual ServerError }, {})
     }
 }

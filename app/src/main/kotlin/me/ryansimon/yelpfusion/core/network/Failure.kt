@@ -1,11 +1,11 @@
-package me.ryansimon.yelpfusion.network
+package me.ryansimon.yelpfusion.core.network
 
 /**
  * @author Ryan Simon
  */
 sealed class Failure {
-    class NoNetworkConnection : Failure()
-    class ServerError : Failure()
+    object NoNetworkConnection : Failure()
+    object ServerError : Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure : Failure()
