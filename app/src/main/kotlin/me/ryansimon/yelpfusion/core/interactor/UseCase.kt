@@ -23,8 +23,11 @@ abstract class UseCase<out Type, in Params> where Type : Any {
             coroutineScope: CoroutineScope,
             params: Params,
             onResult: (Either<Failure, Type>) -> Unit = {}) {
-        val backgroundJob = coroutineScope.async { run(params) }
-        coroutineScope.launch { onResult(backgroundJob.await()) }
+        coroutineScope.launch {
+            onResult(withContext(Dispatchers.IO) {
+                run(params)
+            })
+        }
     }
 
     class None

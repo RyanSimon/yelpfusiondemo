@@ -47,7 +47,7 @@ class BusinessRepositoryImpl(
     private fun <T, R> request(call: Call<T>, transform: (T) -> R): Either<Failure, R> {
         return try {
             val response = call.execute()
-            when (response.body() != null) {
+            when (response.isSuccessful && response.body() != null) {
                 true -> Success(transform(response.body()!!))
                 false -> Error(ServerError)
             }
