@@ -39,7 +39,7 @@ abstract class UseCase<out Type, in Params> where Type : Any {
                 .flowOn(Dispatchers.IO)
                 .onStart {
                     val delayTime = measureTimeMillis {
-                        delay(600)
+                        delay(2000)
                     }
 
                     measure += delayTime
