@@ -15,11 +15,10 @@ import me.ryansimon.yelpfusion.feature.business.domain.GetBusinessesBySearch
 /**
  * @author Ryan Simon
  */
-class BusinessesViewModelFactory(private val application: Application) : ViewModelProvider.AndroidViewModelFactory(application) {
+class BusinessesViewModelFactory(private val application: Application) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val apiConfiguration = ApiConfiguration(BuildConfig.YELP_API_KEY)
         return BusinessesViewModel(
-                application,
                 GetBusinessesBySearch(
                         BusinessRepositoryImpl(
                                 apiConfiguration.retrofit.create(BusinessesApi::class.java),

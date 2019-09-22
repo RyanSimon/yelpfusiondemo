@@ -14,7 +14,6 @@ import me.ryansimon.yelpfusion.core.extension.hideKeyboard
 import android.provider.BaseColumns
 import android.database.MatrixCursor
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import me.ryansimon.yelpfusion.R
@@ -28,9 +27,6 @@ import me.ryansimon.yelpfusion.feature.business.domain.Business
  */
 class BusinessesActivity : AppCompatActivity() {
 
-    private val suggestions = mutableListOf<String>()
-    private val suggestionsId = "suggestions"
-    private lateinit var searchView: SearchView
     private lateinit var businessesViewModel: BusinessesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +38,7 @@ class BusinessesActivity : AppCompatActivity() {
                 .get(BusinessesViewModel::class.java)
         businessesViewModel.businessesObservable.observe(this, Observer<List<Business>> {
             it?.let {
-                (business_list_view.adapter as BusinessesAdapter).updateBusinesses(it)
+                (businessListView.adapter as BusinessesAdapter).updateBusinesses(it)
             }
         })
 
@@ -51,7 +47,6 @@ class BusinessesActivity : AppCompatActivity() {
     }
 
     private fun setupSearchView() {
-        searchView = search_view
         searchView.setIconifiedByDefault(false)
         searchView.queryTextChangeEvents()
                 .onEach {
@@ -59,51 +54,14 @@ class BusinessesActivity : AppCompatActivity() {
 
                     if (it.isSubmitted) {
                         searchSubmitted(query)
-                    } else {
-                        populateSuggestionsAdapter(query)
                     }
                 }
                 .launchIn(lifecycleScope)
-
-        searchView.setOnSuggestionListener(object : SearchView.OnSuggestionListener {
-            override fun onSuggestionClick(position: Int): Boolean {
-                suggestionSelected()
-                return true
-            }
-
-            override fun onSuggestionSelect(position: Int): Boolean {
-                suggestionSelected()
-                return true
-            }
-        })
-        val to = intArrayOf(android.R.id.text1)
-        val from = arrayOf(suggestionsId)
-        searchView.suggestionsAdapter = SimpleCursorAdapter(
-                this,
-                android.R.layout.simple_selectable_list_item,
-                null,
-                from,
-                to,
-                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
-        )
-    }
-
-    private fun populateSuggestionsAdapter(query: String) {
-        val matrixCursor = MatrixCursor(arrayOf(BaseColumns._ID, suggestionsId))
-        (0 until suggestions.size)
-                .filter { suggestions[it].toLowerCase().startsWith(query.toLowerCase()) }
-                .forEach { matrixCursor.addRow(arrayOf(it, suggestions[it])) }
-
-        searchView.suggestionsAdapter.changeCursor(matrixCursor)
     }
 
     private fun searchSubmitted(query: String) {
-        val adapter = business_list_view.adapter as BusinessesAdapter
+        val adapter = businessListView.adapter as BusinessesAdapter
         adapter.clear()
-
-        if(!suggestions.contains(query)) {
-            suggestions.add(query)
-        }
 
         businessesViewModel.userSubmittedPaginatedSearch(query)
 
@@ -112,7 +70,7 @@ class BusinessesActivity : AppCompatActivity() {
     }
 
     private fun setupBusinessList() {
-        val businessListView = business_list_view
+        val businessListView = businessListView
         val scrollListener = object : EndlessRecyclerViewScrollListener(businessListView.layoutManager as GridLayoutManager) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
                 businessesViewModel.userSubmittedPaginatedSearch(searchView.query.toString(), false)
@@ -123,11 +81,7 @@ class BusinessesActivity : AppCompatActivity() {
         businessListView.adapter = BusinessesAdapter()
     }
 
-    private fun suggestionSelected() {
-        searchView.setQuery(searchView.suggestionsAdapter.cursor.getString(1), true)
-    }
-
     private fun hideSearchEditCursor() {
-        business_list_view.requestFocus()
+        businessListView.requestFocus()
     }
 }
