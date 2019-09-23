@@ -32,14 +32,14 @@ class GetBusinessesAndTopReviewsBySearch(
     }
 
     private suspend fun processBusinessSuccess(businesses: List<Business>) {
-        deferred = coroutineScope { async { getBusinessesAndTopReview(businesses) } }
+        deferred = coroutineScope { async { getBusinessesWithReviews(businesses) } }
     }
 
     private suspend fun processBusinessFailure(failure: Failure) {
         deferred = coroutineScope { async { Error(failure) } }
     }
 
-    private suspend fun getBusinessesAndTopReview(businesses: List<Business>): Either<Failure, List<BusinessAndTopReview>> {
+    private suspend fun getBusinessesWithReviews(businesses: List<Business>): Either<Failure, List<BusinessAndTopReview>> {
         val flows: MutableList<Flow<Either<Failure, BusinessAndTopReview>>> = mutableListOf()
         businesses.forEach { business ->
             flows.add(
@@ -47,7 +47,6 @@ class GetBusinessesAndTopReviewsBySearch(
                             .map {
                                 fetchBusinessReviews(it)
                             }
-                            .flowOn(Dispatchers.IO)
                             .map { (business, businessReviews) ->
                                 mapBusinessAndReviews(business, businessReviews)
                             }
@@ -75,9 +74,9 @@ class GetBusinessesAndTopReviewsBySearch(
         maybeBusinessReviews.either(
                 { { businessAndTopReview = Error(it) }.invoke() },
                 { {
-                    val businessReview = it.firstOrNull()
-                    if (businessReview != null) {
-                        businessAndTopReview = Success(BusinessAndTopReview(business, businessReview))
+                    val topBusinessReview = it.firstOrNull()
+                    if (topBusinessReview != null) {
+                        businessAndTopReview = Success(BusinessAndTopReview(business, topBusinessReview))
                     }
                 }.invoke() }
         )
