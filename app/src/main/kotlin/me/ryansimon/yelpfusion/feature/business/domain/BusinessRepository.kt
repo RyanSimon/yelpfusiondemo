@@ -11,4 +11,6 @@ interface BusinessRepository {
                location: String,
                numResults: Int,
                numResultsToSkip: Int): Either<Failure, List<Business>>
+
+    fun getBusinessReviews(businessId: String): Either<Failure, List<BusinessReview>>
 }

@@ -9,7 +9,8 @@ import me.ryansimon.yelpfusion.feature.business.data.BusinessRepositoryImpl
 import me.ryansimon.yelpfusion.feature.business.data.network.BusinessesApi
 import me.ryansimon.yelpfusion.core.network.ApiConfiguration
 import me.ryansimon.yelpfusion.core.network.InternetConnectionHandler
-import me.ryansimon.yelpfusion.feature.business.domain.GetBusinessesBySearch
+import me.ryansimon.yelpfusion.feature.business.data.network.BusinessReviewMapper
+import me.ryansimon.yelpfusion.feature.business.domain.GetBusinessesAndTopReviewsBySearch
 
 
 /**
@@ -19,11 +20,12 @@ class BusinessesViewModelFactory(private val application: Application) : ViewMod
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val apiConfiguration = ApiConfiguration(BuildConfig.YELP_API_KEY)
         return BusinessesViewModel(
-                GetBusinessesBySearch(
+                GetBusinessesAndTopReviewsBySearch(
                         BusinessRepositoryImpl(
                                 apiConfiguration.retrofit.create(BusinessesApi::class.java),
                                 InternetConnectionHandler(application),
-                                BusinessMapper()
+                                BusinessMapper(),
+                                BusinessReviewMapper()
                         )
                 )
         ) as T

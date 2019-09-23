@@ -26,6 +26,12 @@ sealed class Either<out L, out R> {
                 is Error -> fnL(value)
                 is Success -> fnR(value)
             }
+
+    suspend fun eitherSuspend(fnL: suspend (L) -> Any, fnR: suspend (R) -> Any): Any =
+            when (this) {
+                is Error -> fnL(value)
+                is Success -> fnR(value)
+            }
 }
 
 // Credits to Alex Hart -> https://proandroiddev.com/kotlins-nothing-type-946de7d464fb

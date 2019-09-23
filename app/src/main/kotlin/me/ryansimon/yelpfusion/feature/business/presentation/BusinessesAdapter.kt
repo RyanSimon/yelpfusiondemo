@@ -12,11 +12,12 @@ import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_yelp_business.view.*
 import me.ryansimon.yelpfusion.R
 import me.ryansimon.yelpfusion.feature.business.domain.Business
+import me.ryansimon.yelpfusion.feature.business.domain.BusinessAndTopReview
 
 /**
  * @author Ryan Simon
  */
-class BusinessesAdapter(private val businesses: MutableList<Business> = mutableListOf())
+class BusinessesAdapter(private val businesses: MutableList<BusinessAndTopReview> = mutableListOf())
     : RecyclerView.Adapter<BusinessesAdapter.BusinessViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessViewHolder {
@@ -27,7 +28,7 @@ class BusinessesAdapter(private val businesses: MutableList<Business> = mutableL
     }
 
     override fun onBindViewHolder(holder: BusinessViewHolder, position: Int) {
-        val business = businesses[position]
+        val business = businesses[position].first
         val context = holder.businessImageView.context
 
         holder.businessNameTextView.text = business.name
@@ -43,7 +44,7 @@ class BusinessesAdapter(private val businesses: MutableList<Business> = mutableL
 
     override fun getItemCount(): Int = businesses.size
 
-    fun updateBusinesses(newBusinesses: List<Business>) {
+    fun updateBusinesses(newBusinesses: List<BusinessAndTopReview>) {
         when {
             newBusinesses.isNotEmpty() -> {
                 val currentSize = businesses.size

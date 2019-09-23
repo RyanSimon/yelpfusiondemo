@@ -4,13 +4,14 @@ import android.util.Log
 import androidx.lifecycle.*
 import me.ryansimon.yelpfusion.feature.business.domain.Business
 import me.ryansimon.yelpfusion.core.network.Failure
-import me.ryansimon.yelpfusion.feature.business.domain.GetBusinessesBySearch
-import me.ryansimon.yelpfusion.feature.business.domain.GetBusinessesBySearch.Params
+import me.ryansimon.yelpfusion.feature.business.domain.BusinessAndTopReview
+import me.ryansimon.yelpfusion.feature.business.domain.GetBusinessesAndTopReviewsBySearch
+import me.ryansimon.yelpfusion.feature.business.domain.GetBusinessesAndTopReviewsBySearch.Params
 
 /**
  * @author Ryan Simon
  */
-class BusinessesViewModel(private val getBusinessesBySearch: GetBusinessesBySearch) : ViewModel() {
+class BusinessesViewModel(private val getBusinessesAndTopReviewsBySearch: GetBusinessesAndTopReviewsBySearch) : ViewModel() {
 
     private val numResults = 20
     private var numResultsToSkip = 0
@@ -19,8 +20,8 @@ class BusinessesViewModel(private val getBusinessesBySearch: GetBusinessesBySear
     /**
      * Observables
      */
-    private val _businessesObservable = MutableLiveData<List<Business>>()
-    val businessesObservable: LiveData<List<Business>>
+    private val _businessesObservable = MutableLiveData<List<BusinessAndTopReview>>()
+    val businessesObservable: LiveData<List<BusinessAndTopReview>>
         get() = _businessesObservable
 
     fun userSubmittedPaginatedSearch(searchTerm: String, newSearch: Boolean = true) {
@@ -39,7 +40,7 @@ class BusinessesViewModel(private val getBusinessesBySearch: GetBusinessesBySear
                                     location: String,
                                     numResults: Int,
                                     numResultsToSkip: Int) {
-        getBusinessesBySearch(
+        getBusinessesAndTopReviewsBySearch(
                 viewModelScope,
                 Params(searchTerm, location, numResults, numResultsToSkip)
         ) {
@@ -47,7 +48,7 @@ class BusinessesViewModel(private val getBusinessesBySearch: GetBusinessesBySear
         }
     }
 
-    private fun processSuccess(businesses: List<Business>) {
+    private fun processSuccess(businesses: List<BusinessAndTopReview>) {
         _businessesObservable.value = mergeBusinessList(businesses)
     }
 
@@ -55,8 +56,8 @@ class BusinessesViewModel(private val getBusinessesBySearch: GetBusinessesBySear
         Log.d("Error", failure::class.java.simpleName)
     }
 
-    private fun mergeBusinessList(businesses: List<Business>): List<Business> {
-        val mergedList = mutableListOf<Business>()
+    private fun mergeBusinessList(businesses: List<BusinessAndTopReview>): List<BusinessAndTopReview> {
+        val mergedList = mutableListOf<BusinessAndTopReview>()
         val currentBusinesses = _businessesObservable.value
 
         currentBusinesses?.let {

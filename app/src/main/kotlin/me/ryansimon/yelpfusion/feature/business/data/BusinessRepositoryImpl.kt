@@ -11,6 +11,8 @@ import me.ryansimon.yelpfusion.core.functional.Either.Error
 import me.ryansimon.yelpfusion.core.network.Failure
 import me.ryansimon.yelpfusion.core.network.Failure.*
 import me.ryansimon.yelpfusion.core.network.InternetConnectionHandler
+import me.ryansimon.yelpfusion.feature.business.data.network.BusinessReviewMapper
+import me.ryansimon.yelpfusion.feature.business.domain.BusinessReview
 import retrofit2.Call
 
 /**
@@ -19,7 +21,8 @@ import retrofit2.Call
 class BusinessRepositoryImpl(
         private val businessesApi: BusinessesApi,
         private val internetConnectionHandler: InternetConnectionHandler,
-        private val businessMapper: BusinessMapper) : BusinessRepository {
+        private val businessMapper: BusinessMapper,
+        private val businessReviewMapper: BusinessReviewMapper) : BusinessRepository {
 
     override fun search(searchTerm: String,
                location: String,
@@ -34,6 +37,17 @@ class BusinessRepositoryImpl(
                     }
                 } catch (error: IllegalArgumentException) {
                     Error(SearchParametersAreInvalid)
+                }
+            }
+            false -> Error(NoNetworkConnection)
+        }
+    }
+
+    override fun getBusinessReviews(businessId: String): Either<Failure, List<BusinessReview>> {
+        return when (internetConnectionHandler.isConnected) {
+            true -> {
+                request(businessesApi.getBusinessReviews(businessId)) {
+                    businessReviewMapper.make(it)
                 }
             }
             false -> Error(NoNetworkConnection)

@@ -20,6 +20,7 @@ import me.ryansimon.yelpfusion.R
 import me.ryansimon.yelpfusion.core.extension.queryTextChangeEvents
 import me.ryansimon.yelpfusion.core.EndlessRecyclerViewScrollListener
 import me.ryansimon.yelpfusion.feature.business.domain.Business
+import me.ryansimon.yelpfusion.feature.business.domain.BusinessAndTopReview
 
 
 /**
@@ -36,7 +37,7 @@ class BusinessesActivity : AppCompatActivity() {
 
         businessesViewModel = ViewModelProviders.of(this, BusinessesViewModelFactory(application))
                 .get(BusinessesViewModel::class.java)
-        businessesViewModel.businessesObservable.observe(this, Observer<List<Business>> {
+        businessesViewModel.businessesObservable.observe(this, Observer<List<BusinessAndTopReview>> {
             it?.let {
                 (businessListView.adapter as BusinessesAdapter).updateBusinesses(it)
             }
