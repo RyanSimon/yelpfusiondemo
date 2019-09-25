@@ -4,22 +4,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.cursoradapter.widget.CursorAdapter
-import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import androidx.recyclerview.widget.RecyclerView
-import androidx.appcompat.widget.SearchView
 import me.ryansimon.yelpfusion.core.extension.hideKeyboard
-import android.provider.BaseColumns
-import android.database.MatrixCursor
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import me.ryansimon.yelpfusion.R
 import me.ryansimon.yelpfusion.core.extension.queryTextChangeEvents
 import me.ryansimon.yelpfusion.core.EndlessRecyclerViewScrollListener
-import me.ryansimon.yelpfusion.feature.business.domain.Business
 import me.ryansimon.yelpfusion.feature.business.domain.BusinessAndTopReview
 
 

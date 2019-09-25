@@ -2,7 +2,6 @@ package me.ryansimon.yelpfusion.feature.business.presentation
 
 import android.util.Log
 import androidx.lifecycle.*
-import me.ryansimon.yelpfusion.feature.business.domain.Business
 import me.ryansimon.yelpfusion.core.network.Failure
 import me.ryansimon.yelpfusion.feature.business.domain.BusinessAndTopReview
 import me.ryansimon.yelpfusion.feature.business.domain.GetBusinessesAndTopReviewsBySearch
