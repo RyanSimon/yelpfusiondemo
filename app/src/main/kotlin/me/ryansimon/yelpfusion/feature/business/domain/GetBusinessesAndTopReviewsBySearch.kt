@@ -40,17 +40,14 @@ class GetBusinessesAndTopReviewsBySearch(
     }
 
     private suspend fun getBusinessesWithReviews(businesses: List<Business>): Either<Failure, List<BusinessAndTopReview>> {
-        val flows: MutableList<Flow<Either<Failure, BusinessAndTopReview>>> = mutableListOf()
-        businesses.forEach { business ->
-            flows.add(
-                    flowOf(business)
-                            .map {
-                                fetchBusinessReviews(it)
-                            }
-                            .map { (business, businessReviews) ->
-                                mapBusinessAndReviews(business, businessReviews)
-                            }
-            )
+        val flows = businesses.map { business ->
+            flowOf(business)
+                    .map {
+                        fetchBusinessReviews(it)
+                    }
+                    .map { (business, businessReviews) ->
+                        mapBusinessAndReviews(business, businessReviews)
+                    }
         }
 
         val concurrentlyFetchedReviews = merge(*flows.toTypedArray()).toList()
